@@ -30,6 +30,24 @@ public class NeuralNetwork {
     }
     
     /**
+     * Main method for testing some functionality (To be removed at a later date)
+     * 
+     * @param args 
+     */
+    public static void main(String... args) {
+        int[] input = {0,0,1,0,1,1,0,0,0,1};
+        double[] weight = {1,0,0,0,0,0,0,0,1,0};
+        int desired = 1;
+        double learningRate = 0.05;
+        NeuralNetwork nn = new NeuralNetwork(input, weight, desired, learningRate);
+        System.out.printf(nn.toString());
+        for(int i = 0; i < desired/learningRate; i++) {
+            nn.learn(input, nn.weights);
+            System.out.printf(nn.toString());
+        }
+    }
+    
+    /**
      * Evaluate method.
      * 
      * @param input Input data
@@ -52,8 +70,10 @@ public class NeuralNetwork {
      */
     public void learn(int[] input, double[] weight) {
         for(int i = 0; i < input.length; i++) {
-            if(input[i] > 0) {
+            if(input[i] > 0 && weights[i] < desired) {
                 weights[i] += learningRate;
+            } else if(input[i] < desired && weight[i] > input[i]){
+                weights[i] = Math.abs(weights[i] - learningRate);
             }
         }
     }
@@ -67,5 +87,20 @@ public class NeuralNetwork {
      */
     public int error(int desired, int actual) {
         return desired - actual;
+    }
+    
+    /**
+     * 
+     * @return 
+     */
+    @Override
+    public String toString() {
+        String inputString = "";
+        String weightString = "";
+        for(int i = 0; i < this.inputs.length; i++) {
+            inputString += String.format("%d\t\t", this.inputs[i]);
+            weightString += String.format("%f\t", this.weights[i]);
+        }
+        return String.format("\nInput:\t%s\nWeight:\t%s\n\nDesired: %d\nLearning Rate: %f\n", inputString, weightString, this.desired, this.learningRate);
     }
 }
